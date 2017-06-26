@@ -3,7 +3,7 @@
     "group": "Wake Up, Girls!",
     "color": "#08a553",
     "embedded": "http://embed.nicovideo.jp/watch/sm26797340/script?w=640&h=360",
-    "audioFile": "/audio/tachiagare.mp3",
+    "audioFile": "./audio/tachiagare.mp3",
     "lyrics": [
         ["Wake", 11.7, true],
         ["Up,", 12.0, true],
