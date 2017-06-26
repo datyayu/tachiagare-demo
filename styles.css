@@ -1,0 +1,63 @@
+html {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-direction: column;
+}
+
+.song-data {
+    text-align: center;
+    min-width: 50%;
+    overflow-y: auto;
+}
+
+.song-title {
+    font-size: 2.5em;
+}
+
+.song-group {
+    color: #aaa;
+}
+
+.data-title {
+    margin-top: 2em;
+    color: #333;
+}
+
+.audio-player {
+    width: 100%;
+}
+
+.lyrics-container {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.lyrics {
+    max-width: 80vw;
+    margin: 0 auto;
+}
+
+
+@media screen and (min-width: 768px) {
+    .container {
+        flex-direction: row;
+    }
+
+    .song-data {
+        max-height: 90vh;
+    }
+
+    .lyrics {
+        max-width: 90vw;
+        overflow-y: auto;
+        max-height: 90vh;
+        padding: 1em 5vw;
+    }
+}
