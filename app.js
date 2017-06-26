@@ -93,6 +93,7 @@ function start() {
             }
 
             setSong(data.audioFile)
+            renderSongLyrics()
         })
         .catch(console.log)
 }
@@ -119,7 +120,6 @@ function appendScript(src, dest) {
 function setSong(url) {
     $player.pause()
     $player.src = url
-    $player.currentTime = 128
 }
 
 /**
