@@ -104,12 +104,13 @@ function start() {
  * @param {String} src The src for the script tag.
  * @param {HtmlElement} dest Node to mount the script on.
  */
-function appendScript(src, dest) {
-    var script = document.createElement('script')
-    script.type = 'text/javascript'
-    script.async = true
-    script.src = src
-    dest.appendChild(script)
+function appendScript(data, dest) {
+    // var script = document.createElement('script')
+    // script.type = 'text/javascript'
+    // script.async = true
+    // script.src = src
+    // dest.appendChild(script)
+    dest.innerHTML = data;
 }
 
 /**
