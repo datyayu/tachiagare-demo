@@ -158,6 +158,8 @@ function renderSongLyrics() {
     var template = ''
     var currentTime = currentSong.time
     var currentCalls = ''
+    var linesHighlighted = 0
+    var lineWasHighlighted = false
 
     $time.innerText = currentTime.toFixed(2)
 
@@ -167,11 +169,19 @@ function renderSongLyrics() {
         var isCall = item[2]
         var callColor = item[3]
         var mustBeHighlighted = (currentTime >= start)
+        lineWasHighlighted = lineWasHighlighted || mustBeHighlighted
 
         // If the item is empty, it's a line break, so we add the calls under it.
         if (!text || start === undefined) {
+            if (lineWasHighlighted) {
+                lineWasHighlighted = false
+                linesHighlighted++
+                scrollApp(linesHighlighted)
+            }
+
             template += `<br />${currentCalls}</br>`
             currentCalls = ''
+
             return
         }
 
@@ -198,6 +208,18 @@ function renderSongLyrics() {
     })
 
     $app.innerHTML = `<div> ${template} </div>`
+}
+
+window.app = $app
+
+function scrollApp(lines) {
+    lineHeight = 40
+
+    if (lines > 5) {
+        $app.scrollTop = lines * lineHeight - (5 * lineHeight)
+    } else {
+        $app.scrollTop = 0
+    }
 }
 
 // start !!
