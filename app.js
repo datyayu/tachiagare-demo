@@ -4,16 +4,33 @@ var currentSong = undefined
 var tick = undefined
 
 // Dom elements
+var $audioSrc = document.getElementById('js-audio-src')
 var $player = document.getElementById('js-audio')
 var $app = document.getElementById('js-lyrics')
 var $title = document.getElementById('js-title')
 var $group = document.getElementById('js-group')
-var $video = document.getElementById('js-video')
+var $time = document.getElementById('js-time')
+var $bookmark = document.getElementById('js-bookmark-input')
+
+/**
+ * When the bookmark is updated, save it to localstorage.
+ */
+$bookmark.addEventListener('change', function(event) {
+    var value = event.target.value
+
+    localStorage.setItem('bookmark', value)
+    $player.currentTime = value
+})
 
 /**
  * When we got the song buffer, start playing it.
  */
-$player.addEventListener('canplaythrough', play)
+$player.addEventListener('canplaythrough', function(event) {
+    var duration = event.target.duration
+    $bookmark.max = duration
+
+    play()
+})
 
 
 /**
@@ -71,7 +88,7 @@ $player.addEventListener('ended', function() {
  * Request the song and start playing.
  */
 function start() {
-    var songData = $app.getAttribute('data-song')
+    var songData = $audioSrc.getAttribute('data-song')
 
     if (!songData) return
 
@@ -88,30 +105,12 @@ function start() {
                 $title.setAttribute("style", `color:${data.color};`)
             }
 
-            if (data.embedded) {
-                appendScript(data.embedded, $video)
-            }
-
             setSong(data.audioFile)
             renderSongLyrics()
         })
         .catch(console.log)
 }
 
-/**
- * Insert an script tag into the specified element.
- *
- * @param {String} src The src for the script tag.
- * @param {HtmlElement} dest Node to mount the script on.
- */
-function appendScript(data, dest) {
-    // var script = document.createElement('script')
-    // script.type = 'text/javascript'
-    // script.async = true
-    // script.src = src
-    // dest.appendChild(script)
-    dest.innerHTML = data;
-}
 
 /**
  * Set a song as the current one and request it.
@@ -119,8 +118,19 @@ function appendScript(data, dest) {
  * will automatically play it as soon as it is downloaded.
  */
 function setSong(url) {
+    var dataTime = $audioSrc.getAttribute('data-start-at')
+    var bookmark = localStorage.getItem('bookmark')
+
     $player.pause()
     $player.src = url
+
+    if (dataTime) {
+        $player.currentTime = +dataTime
+    }
+
+    if (bookmark) {
+        $player.currentTime = +bookmark
+    }
 }
 
 /**
@@ -136,6 +146,10 @@ function play() {
  *
  * @todo Optimize this, I think re-rendering everything each
  *       update is unnecessary.
+ *
+ * NOTE: This was already optimized on the prod server.
+ * I'm just too lazy to copy the morphdom file. See:
+ * https://github.com/datyayu/tachiagare/blob/master/static/app.js#L180
  */
 function renderSongLyrics() {
     var words = currentSong && currentSong.lyrics
@@ -145,10 +159,13 @@ function renderSongLyrics() {
     var currentTime = currentSong.time
     var currentCalls = ''
 
+    $time.innerText = currentTime.toFixed(2)
+
     words.forEach(function(item) {
         var text = item[0]
         var start = item[1]
         var isCall = item[2]
+        var callColor = item[3]
         var mustBeHighlighted = (currentTime >= start)
 
         // If the item is empty, it's a line break, so we add the calls under it.
@@ -161,6 +178,11 @@ function renderSongLyrics() {
         // Store the calls.
         if (isCall) {
             text = text.replace(/\s/g, '&nbsp;')
+
+            if (callColor && mustBeHighlighted)  {
+                currentCalls += `<span style="color: ${callColor}">${text} </span>`
+                return
+            }
 
             currentCalls += mustBeHighlighted
                 ? `<span style="color: red">${text} </span>`
@@ -181,6 +203,11 @@ function renderSongLyrics() {
 // start !!
 window.onload = function() {
     start()
-}
 
+    var bookmark = localStorage.getItem('bookmark')
+
+    if (bookmark) {
+        $bookmark.value = bookmark
+    }
+}
 })()

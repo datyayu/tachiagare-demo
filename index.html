@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+    <!-- HERE YOU CAN SET THE PATH TO YOUR SONG FILE -->
+    <div
+        data-song="./lyrics/test.json"
+        data-start-at="0"
+        id="js-audio-src"
+    ></div>
+
+    <!-- APP CODE -->
+
     <div class="container">
         <div class="song-data">
             <h2 class="song-title" id="js-title">Loading</h2>
@@ -16,13 +25,15 @@
             <h2 class="data-title"> Player </h2>
             <audio class="audio-player" id="js-audio" controls></audio>
 
-            <h2 class="data-title"> Live performance </h2>
-            <div class="video-player" id="js-video">
-            </div>
+            <h2 class="data-title"> Current Time </h2>
+            <h3 class="data-time" id="js-time"></h3>
+
+            <h2 class="data-title">Set bookmark</h2>
+            <input type="number" class="bookmark-input" id="js-bookmark-input" min="0" max="1" step=".25">
         </div>
 
         <div class="lyrics-container">
-            <div class="lyrics" id="js-lyrics" data-song="./lyrics/tachiagare.json"></div>
+            <div class="lyrics" id="js-lyrics"></div>
         </div>
     </div>
 
