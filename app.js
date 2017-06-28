@@ -1,7 +1,10 @@
-(function() {
 // Globals (I'm so sorry about this ;_;)
 var currentSong = undefined
 var tick = undefined
+
+var LINE_HEIGHT = 34
+var UPDATE_INTERVAL = 100
+var MAX_OFFSET = UPDATE_INTERVAL / 1000 // seconds
 
 // Dom elements
 var $audioSrc = document.getElementById('js-audio-src')
@@ -12,6 +15,7 @@ var $group = document.getElementById('js-group')
 var $time = document.getElementById('js-time')
 var $bookmark = document.getElementById('js-bookmark-input')
 
+
 /**
  * When the bookmark is updated, save it to localstorage.
  */
@@ -21,6 +25,7 @@ $bookmark.addEventListener('change', function(event) {
     localStorage.setItem('bookmark', value)
     $player.currentTime = value
 })
+
 
 /**
  * When we got the song buffer, start playing it.
@@ -41,9 +46,8 @@ $player.addEventListener('timeupdate', function(event) {
 
     var currentTime = currentSong.time
     var playerTime = $player.currentTime
-    var offset = 1
 
-    if (currentTime > playerTime + offset || currentTime < playerTime - offset) {
+    if (currentTime > playerTime + MAX_OFFSET || currentTime < playerTime - MAX_OFFSET) {
         currentSong.time = playerTime
     }
 })
@@ -69,9 +73,9 @@ $player.addEventListener('play', function() {
     // on it, we use our own timer to keep the updates
     // happening at a constant rate.
     tick = setInterval(() => {
-        currentSong.time = currentSong.time + .25
+        currentSong.time = currentSong.time + (UPDATE_INTERVAL / 1000)
         renderSongLyrics()
-    }, 250)
+    }, UPDATE_INTERVAL)
 })
 
 /**
@@ -159,7 +163,9 @@ function renderSongLyrics() {
     var currentTime = currentSong.time
     var currentCalls = ''
     var linesHighlighted = 0
+    var lineBreaks = 0
     var lineWasHighlighted = false
+    var lastWordWasLineBreak = false
 
     $time.innerText = currentTime.toFixed(2)
 
@@ -173,17 +179,25 @@ function renderSongLyrics() {
 
         // If the item is empty, it's a line break, so we add the calls under it.
         if (!text || start === undefined) {
+            if (lastWordWasLineBreak) {
+                lineBreaks++;
+            }
+
+
             if (lineWasHighlighted) {
+                lastWordWasLineBreak = true
                 lineWasHighlighted = false
                 linesHighlighted++
-                scrollApp(linesHighlighted)
             }
+
 
             template += `<br />${currentCalls}</br>`
             currentCalls = ''
 
             return
         }
+
+        lastWordWasLineBreak = false
 
         // Store the calls.
         if (isCall) {
@@ -208,15 +222,17 @@ function renderSongLyrics() {
     })
 
     $app.innerHTML = `<div> ${template} </div>`
+
+    scrollApp(linesHighlighted + lineBreaks)
 }
 
-window.app = $app
-
+var currentLines = 0
 function scrollApp(lines) {
-    lineHeight = 40
+    if (currentLines === lines) return
+    currentLines = lines
 
     if (lines > 5) {
-        $app.scrollTop = lines * lineHeight - (5 * lineHeight)
+        $app.scrollTop = lines * LINE_HEIGHT - (5 * LINE_HEIGHT)
     } else {
         $app.scrollTop = 0
     }
@@ -232,4 +248,3 @@ window.onload = function() {
         $bookmark.value = bookmark
     }
 }
-})()
