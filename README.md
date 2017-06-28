@@ -95,3 +95,7 @@ For reference, [you can check the demo/test file](https://github.com/datyayu/tac
 
 
 If you need any help, you can PM me or open a issue.
+
+## License
+
+This project is distributed under the MIT license. [You can read it here](https://github.com/datyayu/tachiagare-demo/blob/master/LICENSE.md).
